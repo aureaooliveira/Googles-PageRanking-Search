@@ -2,7 +2,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#define NULL_Value 0
+#include <stdio.h>
+
+#define NULL_Value NULL
+#define DOC_ARR_SIZE 5
+
+// TODO
+//- tratar casos de print em valores NULL (nao existe na arvore)
 
 RBT *RBT_contruct()
 {
@@ -13,10 +19,15 @@ RBT *create_node(Key key, Value val, bool color)
 {
     RBT *node = malloc(sizeof(RBT));
     node->key = key;
-    node->val = val;
+    node->val.doc_array = malloc(sizeof(int) * DOC_ARR_SIZE);
+
+    node->val.max_size = DOC_ARR_SIZE;
     node->color = RED;
     node->l = NULL;
     node->r = NULL;
+
+    node->val.doc_array[0] = val;
+    node->val.n_docs = 1;
     return node;
 }
 
@@ -25,8 +36,9 @@ int compare(Key k1, Key k2)
     return strcmp(k1, k2);
 }
 
-Value search(RBT *n, Key key)
+doc_array *search(RBT *n, Key key)
 {
+
     while (n != NULL)
     {
         int cmp;
@@ -36,9 +48,9 @@ Value search(RBT *n, Key key)
         else if (cmp > 0)
             n = n->r;
         else
-            return n->val;
+            return &n->val;
     }
-    return NULL_Value;
+    return NULL;
 }
 
 bool is_red(RBT *x)
@@ -75,6 +87,18 @@ void flip_colors(RBT *h)
     h->r->color = BLACK;
 }
 
+void add_doc_to_array(RBT *node, Value val)
+{
+    if (node->val.max_size == node->val.n_docs)
+    {
+        // realloc;
+        node->val.max_size *= 2;
+        node->val.doc_array = realloc(node->val.doc_array, sizeof(int) * node->val.max_size);
+    }
+
+    node->val.doc_array[node->val.n_docs++] = val;
+}
+
 RBT *RBT_insert(RBT *h, Key key, Value val)
 {
     // Insert at bottom and color it red.
@@ -93,7 +117,9 @@ RBT *RBT_insert(RBT *h, Key key, Value val)
     }
     else /*cmp == 0*/
     {
-        h->val = val;
+        // h->val = val;
+        add_doc_to_array(h, val);
+        free(key);
     }
     // Lean left.
     if (is_red(h->r) && !is_red(h->l))
@@ -114,4 +140,34 @@ RBT *RBT_insert(RBT *h, Key key, Value val)
     return h;
 }
 
+void print_value(doc_array val)
+{
+
+    printf("docs: ");
+    for (int i = 0; i < val.n_docs; i++)
+    {
+        printf("%d ", val.doc_array[i]);
+    }
+}
+
 // fazer funcao apara liberar toda a arvore
+
+void freeNode(RBT *node)
+{
+    free(node->key);
+    free(node->val.doc_array);
+    free(node);
+}
+
+void freeTree(RBT *root)
+{
+    if (root != NULL)
+    {
+        // Primeiro, liberamos a memória dos filhos (percurso pós-ordem)
+        freeTree(root->l);
+        freeTree(root->r);
+
+        // Em seguida, liberamos a memória do nó atual
+        freeNode(root);
+    }
+}
