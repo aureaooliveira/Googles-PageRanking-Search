@@ -4,11 +4,12 @@
 typedef struct
 {
     char *name;
+    double pageRank;
 } document;
 
 typedef struct
 {
-    char **doc_array;
+    document *doc_array;
     int array_size;
     int n_docs;
 
@@ -17,8 +18,9 @@ typedef struct
 DocTable *docTable_contruct(int size);
 void docTable_add_doc(DocTable *doct, char *word);
 void docTable_sorting(DocTable *doct);
-bool docTable_has_word(char *word);
+int docTable_has_word(DocTable *doct, char *word);
 void docTable_print(DocTable *doct);
 void docTable_destroy(DocTable *d);
+void docTable_sorting(DocTable *doct);
 
 #endif

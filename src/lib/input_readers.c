@@ -86,6 +86,14 @@ void reader(char *dirpath)
     DocTable *doc_table = documents_list_reader(index_file);
     // ordenar tabela de doc antes de fazer o grafo
     docTable_print(doc_table);
+    printf("----------------------------------------ORDENA----------------------------------\n");
+
+    docTable_sorting(doc_table);
+    docTable_print(doc_table);
+
+    printf("index: %d\n", docTable_has_word(doc_table, "10718.txt"));
+    printf("index: %d", docTable_has_word(doc_table, "840.txt"));
+
 
     docTable_destroy(doc_table);
     swTable_destroy(sw_table);
