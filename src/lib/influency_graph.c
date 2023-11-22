@@ -91,8 +91,8 @@ bool stop_function(DocTable *doc_table, double *new_pageRank)
     }
 
     double e_value = somatory / doc_table->n_docs;
-    //printf("EVALUE == %.9lf\n", e_value);
-    //printf("EPSILON == %.9lf\n", EPSILON);
+    // printf("EVALUE == %.9lf\n", e_value);
+    // printf("EPSILON == %.9lf\n", EPSILON);
 
     return (e_value < EPSILON);
 }
@@ -147,9 +147,26 @@ void calc_allPageRank(DocTable *doc_table, influencyGraph *graph)
 
     } while (stop_function(doc_table, new_pageRank_arr) == false);
 
-    printf("ITERATION COUNTER: %d\n", count);
+    // printf("ITERATION COUNTER: %d\n", count);
+    free(new_pageRank_arr);
 
     // calcula todos os valores de page rank
+}
+
+void influencyGraph_destroy(influencyGraph *g)
+{
+    for (int i = 0; i < g->n_total; i++)
+    {
+        if (g->influenced_by_arr[i].adjacency_list)
+        {
+            free(g->influenced_by_arr[i].adjacency_list);
+        }
+
+        forward_list_destroy(&g->influences_arr[i].adjacency_list);
+    }
+    free(g->influenced_by_arr);
+    free(g->influences_arr);
+    free(g);
 }
 
 void print_pagerank_values(DocTable *d)

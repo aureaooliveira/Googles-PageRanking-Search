@@ -169,7 +169,6 @@ void forward_list_destroy(ForwardList *l)
         atual = proximo;
     }
     l->head = NULL;
-    free(l);
 }
 
 struct ForwardListIterator

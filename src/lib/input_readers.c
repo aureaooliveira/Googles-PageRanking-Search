@@ -72,6 +72,8 @@ influencyGraph *graph_reader(char *filepath, DocTable *doc_table)
     }
 
     fclose(graph_file);
+    free(current_docName);
+    free(aux_docName);
 
     return graph;
 }
@@ -124,13 +126,15 @@ void reader(char *dirpath)
     // printf("index: %d", docTable_has_word(doc_table, "840.txt"));
 
     influencyGraph *influency_graph = graph_reader(graph_file, doc_table);
-    //print_influency_graph(influency_graph, doc_table);
+    // print_influency_graph(influency_graph, doc_table);
 
     calc_allPageRank(doc_table, influency_graph);
-    //print_pagerank_values(doc_table);
+    // print_pagerank_values(doc_table);
 
     docTable_destroy(doc_table);
     swTable_destroy(sw_table);
+    influencyGraph_destroy(influency_graph);
+
     free(index_file);
     free(stopword_file);
     free(graph_file);
