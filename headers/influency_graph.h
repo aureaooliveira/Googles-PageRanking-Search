@@ -34,5 +34,7 @@ void add_x_influencedby_y(influencyGraph *graph, int x, int y);
 void add_x_influences_y(influencyGraph *graph, int x, int y);
 
 void print_influency_graph(influencyGraph *g, DocTable *dt);
-
+// void calc_PageRank(DocTable *doc, influencyGraph *graph);
+void calc_allPageRank(DocTable *doc_table, influencyGraph *graph);
+void print_pagerank_values(DocTable *d);
 #endif

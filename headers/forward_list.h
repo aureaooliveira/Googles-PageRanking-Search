@@ -3,6 +3,7 @@
 #define _FORWARD_forward_list_H_
 
 typedef int data_type;
+typedef struct ForwardListIterator ForwardListIterator;
 
 typedef struct Node
 {
@@ -146,5 +147,9 @@ void forward_list_sort(ForwardList *l);
  *
  */
 void forward_list_destroy(ForwardList *l);
+
+void freeIterator(ForwardListIterator *iterator);
+ForwardListIterator *createIterator(ForwardList l);
+int getNext(ForwardListIterator *iterator);
 
 #endif

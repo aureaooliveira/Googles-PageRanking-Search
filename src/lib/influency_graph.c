@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define ALPHA 0.85
+#define EPSILON 1e-6
+
 influencyGraph *graph_construct(int n_doc)
 {
     influencyGraph *g = malloc(sizeof(influencyGraph));
@@ -66,3 +69,93 @@ void print_influency_graph(influencyGraph *g, DocTable *dt)
     }
 }
 
+double abs_value(double val)
+{
+    if (val < 0)
+    {
+        val *= -1;
+    };
+    return val;
+}
+
+bool stop_function(DocTable *doc_table, double *new_pageRank)
+{
+    double somatory = 0;
+    double aux;
+
+    for (int i = 0; i < doc_table->n_docs; i++)
+    {
+        somatory += abs_value(new_pageRank[i] - doc_table->doc_array[i].pageRank);
+
+        doc_table->doc_array[i].pageRank = new_pageRank[i]; // atualiza o pr mais atual na tabela oficial
+    }
+
+    double e_value = somatory / doc_table->n_docs;
+    //printf("EVALUE == %.9lf\n", e_value);
+    //printf("EPSILON == %.9lf\n", EPSILON);
+
+    return (e_value < EPSILON);
+}
+
+double pageRank(int doc, DocTable *doc_table, influencyGraph *graph)
+{
+    double somatory = 0;
+
+    ForwardListIterator *iterator = createIterator(graph->influences_arr[doc].adjacency_list);
+    // iterador sobre a lista encadeada de IN(doc)
+
+    int current_idx = getNext(iterator);
+
+    while (current_idx != -1)
+    {
+        double j_pr_before = docTable_get_pageRank(doc_table, current_idx);
+        int j_out_module = graph->influenced_by_arr[current_idx].n_item;
+        if (j_out_module == 0)
+        {
+            printf("ERROR: tinha que haver adjacencia");
+            exit(1);
+        }
+        somatory += j_pr_before / j_out_module;
+        current_idx = getNext(iterator);
+    }
+    freeIterator(iterator);
+
+    if (graph->influenced_by_arr[doc].n_item == 0)
+    {
+        double doc_pr_before = docTable_get_pageRank(doc_table, doc);
+
+        return ((1 - ALPHA) / doc_table->n_docs) + (ALPHA * doc_pr_before) + (ALPHA * somatory);
+    }
+    else
+    {
+        return ((1 - ALPHA) / doc_table->n_docs) + (ALPHA * somatory);
+    }
+}
+
+void calc_allPageRank(DocTable *doc_table, influencyGraph *graph)
+{
+    double *new_pageRank_arr = malloc(sizeof(double) * doc_table->n_docs);
+    int count = 0;
+    do
+    {
+        for (int i = 0; i < doc_table->n_docs; i++)
+        {
+
+            new_pageRank_arr[i] = pageRank(i, doc_table, graph);
+        }
+        count++;
+
+    } while (stop_function(doc_table, new_pageRank_arr) == false);
+
+    printf("ITERATION COUNTER: %d\n", count);
+
+    // calcula todos os valores de page rank
+}
+
+void print_pagerank_values(DocTable *d)
+{
+    for (int i = 0; i < d->n_docs; i++)
+    {
+        printf("%d %s %lf\n", i, docTable_get_name(d, i), docTable_get_pageRank(d, i));
+    }
+}

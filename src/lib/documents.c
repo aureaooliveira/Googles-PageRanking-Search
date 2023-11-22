@@ -89,6 +89,11 @@ char *docTable_get_name(DocTable *d, int idx)
     return d->doc_array[idx].name;
 }
 
+double docTable_get_pageRank(DocTable *d, int idx)
+{
+    return d->doc_array[idx].pageRank;
+}
+
 void docTable_destroy(DocTable *d)
 {
     for (int i = 0; i < d->n_docs; i++)
@@ -99,4 +104,3 @@ void docTable_destroy(DocTable *d)
 
     free(d);
 }
-

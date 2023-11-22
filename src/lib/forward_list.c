@@ -1,12 +1,9 @@
 #include "../../headers/forward_list.h"
 
-
 #include <stdlib.h>
-#include<stdio.h>
+#include <stdio.h>
 
 typedef int data_type;
-
-
 
 Node *node_construct(data_type value, Node *next)
 {
@@ -19,11 +16,11 @@ Node *node_construct(data_type value, Node *next)
 void node_destroy(Node *n)
 {
     free(n);
-    
 }
 
-void node_print(Node* n){
-    printf("%d",n->value);
+void node_print(Node *n)
+{
+    printf("%d", n->value);
 }
 
 ForwardList *forward_list_construct()
@@ -173,4 +170,36 @@ void forward_list_destroy(ForwardList *l)
     }
     l->head = NULL;
     free(l);
+}
+
+struct ForwardListIterator
+{
+    Node *current;
+};
+
+ForwardListIterator *createIterator(ForwardList l)
+{
+    ForwardListIterator *iterator = (ForwardListIterator *)malloc(sizeof(ForwardListIterator));
+    iterator->current = l.head;
+    return iterator;
+}
+
+int getNext(ForwardListIterator *iterator)
+{
+    if (iterator->current == NULL)
+    {
+        // Retorna um valor especial (por exemplo, -1) para indicar o final da lista
+        return -1;
+    }
+    else
+    {
+        int data = iterator->current->value;
+        iterator->current = iterator->current->next;
+        return data;
+    }
+}
+
+void freeIterator(ForwardListIterator *iterator)
+{
+    free(iterator);
 }

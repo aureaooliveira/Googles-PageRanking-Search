@@ -25,5 +25,6 @@ void docTable_destroy(DocTable *d);
 void docTable_sorting(DocTable *doct);
 
 char *docTable_get_name(DocTable *d, int idx);
+double docTable_get_pageRank(DocTable *d, int idx);
 
 #endif
