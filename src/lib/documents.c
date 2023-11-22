@@ -80,7 +80,7 @@ void docTable_print(DocTable *doct)
 {
     for (int i = 0; i < doct->n_docs; i++)
     {
-        printf("%s\n", doct->doc_array[i].name);
+        printf("%s %.20lf\n", doct->doc_array[i].name, doct->doc_array[i].pageRank);
     }
 }
 
@@ -103,4 +103,48 @@ void docTable_destroy(DocTable *d)
     free(d->doc_array);
 
     free(d);
+}
+
+bool more(document aux1, document aux2)
+{
+    return aux1.pageRank > aux2.pageRank;
+}
+
+void merge(document *a, document *aux, int lo, int mid, int hi)
+{
+    for (int k = lo; k <= hi; k++)
+        aux[k] = a[k]; // Copy array
+    int i = lo, j = mid + 1;
+    for (int k = lo; k <= hi; k++)
+    { // Merge
+        if (i > mid)
+            a[k] = aux[j++];
+        else if (j > hi)
+            a[k] = aux[i++];
+        else if (more(aux[j], aux[i]))
+            a[k] = aux[j++];
+        else
+            a[k] = aux[i++];
+    }
+}
+
+void merge_sort(document *a, document *aux, int lo, int hi)
+{
+    if (hi <= lo)
+        return;
+    int mid = lo + (hi - lo) / 2; // Avoid overflow.
+    merge_sort(a, aux, lo, mid);
+    merge_sort(a, aux, mid + 1, hi);
+    merge(a, aux, lo, mid, hi);
+}
+void sort(document *a, int lo, int hi)
+{
+    int n = (hi - lo) + 1;
+    document *aux = malloc(n * sizeof(document));
+    merge_sort(a, aux, lo, hi);
+    free(aux);
+}
+void docTable_sorted_by_pageRank(DocTable *d)
+{
+    sort(d->doc_array, 0, d->n_docs - 1);
 }

@@ -2,18 +2,23 @@
 #define _STOPWORD_H_
 #include <stdbool.h>
 
-typedef struct
-{
-    char **words_array;
-    int array_size;
-    int n_item;
-} StopwordTable;
+typedef char* Key;
 
-StopwordTable *swTable_contruct(int size);
-void swTable_add_word(StopwordTable *swt, char *word);
-void swTable_sorting(StopwordTable *swt);
-bool swTable_has_word(char *word);
-void swTable_print(StopwordTable *swt);
-void swTable_destroy(StopwordTable *s);
+#define RED true
+#define BLACK false
+
+struct sw_node
+{
+    Key key;
+    bool color;
+    struct sw_node *l, *r;
+};
+
+typedef struct sw_node swTree;
+
+swTree *swTree_construct();
+swTree *swTree_insert(swTree *swt, Key word);
+bool search_sw(swTree *t, Key key);
+void free_swTree(swTree *s);
 
 #endif

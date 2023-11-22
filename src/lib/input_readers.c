@@ -11,10 +11,10 @@
 #include "../../headers/documents.h"
 #include "../../headers/redblack_tree.h"
 
-StopwordTable *stopwords_reader(char *filepath)
+swTree *stopwords_reader(char *filepath)
 {
     FILE *stopword = fopen(filepath, "r");
-    StopwordTable *sw_table = swTable_contruct(200);
+    swTree *sw_tree = swTree_construct();
 
     if (stopword == NULL)
     {
@@ -24,15 +24,13 @@ StopwordTable *stopwords_reader(char *filepath)
 
     while (!feof(stopword))
     {
-        char *word = malloc(sizeof(char) * 50);
+        char *word = malloc(sizeof(char) * 20);
         fscanf(stopword, "%s\n", word);
-        swTable_add_word(sw_table, word);
+        sw_tree = swTree_insert(sw_tree, word);
     }
 
-    // swTable_print(sw_table);
-
     fclose(stopword);
-    return sw_table;
+    return sw_tree;
 }
 
 influencyGraph *graph_reader(char *filepath, DocTable *doc_table)
@@ -101,7 +99,7 @@ DocTable *documents_list_reader(char *filepath)
     return doct;
 }
 
-wordsTree *words_reader(DocTable *doc_table, char *dirpath)
+wordsTree *words_reader(DocTable *doc_table, swTree *sw_tree, char *dirpath)
 {
     char *document_file_name = malloc(sizeof(char) * 100);
 
@@ -122,7 +120,15 @@ wordsTree *words_reader(DocTable *doc_table, char *dirpath)
         {
             char *word = malloc(sizeof(char *) * 15);
             fscanf(doc_file, "%s ", word);
-            allWords_tree = RBT_insert(allWords_tree, word, i);
+
+            if (search_sw(sw_tree, word))
+            {
+                free(word);
+            }
+            else
+            {
+                allWords_tree = RBT_insert(allWords_tree, word, i);
+            }
         }
 
         fclose(doc_file);
@@ -146,29 +152,33 @@ void reader(char *dirpath)
 
     // printf("%s\n%s\n%s\n", index_file, stopword_file, graph_file);
 
-    StopwordTable *sw_table = stopwords_reader(stopword_file);
+    swTree *sw_tree = stopwords_reader(stopword_file);
     DocTable *doc_table = documents_list_reader(index_file);
     // ordenar tabela de doc antes de fazer o grafo
     // docTable_print(doc_table);
     // swTable_print(sw_table);
 
     docTable_sorting(doc_table);
-    swTable_sorting(sw_table);
-    // swTable_print(sw_table);
-    docTable_print(doc_table);
-    // printf("----------------------------------------SEPARA----------------------------------\n");
+    // swTable_sorting(sw_table);
+    //  swTable_print(sw_table);
+
     influencyGraph *influency_graph = graph_reader(graph_file, doc_table);
     // print_influency_graph(influency_graph, doc_table);
     calc_allPageRank(doc_table, influency_graph);
+    // docTable_print(doc_table);
+    // printf("n docs : %d\n", doc_table->n_docs);
+    //  printf("----------------------------------------ORDENAAAAAAAAAAAAAA----------------------------------\n");
     influencyGraph_destroy(influency_graph);
+    docTable_sorted_by_pageRank(doc_table);
+    wordsTree *allWords_tree = words_reader(doc_table,sw_tree, dirpath);
 
-    wordsTree *allWords_tree = words_reader(doc_table, dirpath);
+    // printf("%s %.9lf\n", docTable_get_name(doc_table, 115), docTable_get_pageRank(doc_table, 115));
+    // printf("%s %.9lf\n", docTable_get_name(doc_table, 475), docTable_get_pageRank(doc_table, 475));
 
-    // print_pagerank_values(doc_table);
+    // docTable_print(doc_table);
 
     docTable_destroy(doc_table);
-    swTable_destroy(sw_table);
-
+    free_swTree(sw_tree);
     freeTree(allWords_tree);
     free(index_file);
     free(stopword_file);

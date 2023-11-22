@@ -2,52 +2,136 @@
 #include "../../headers/stopwords.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
-StopwordTable *swTable_contruct(int size)
+swTree *swTree_construct()
 {
-    StopwordTable *sw = malloc(sizeof(StopwordTable));
-    sw->words_array = malloc(sizeof(char *) * size);
-    sw->array_size = size;
-    sw->n_item = 0;
-    return sw;
+    return NULL;
 }
 
-void swTable_add_word(StopwordTable *swt, char *word)
+swTree *create_sw_node(Key key, bool color)
 {
-    if (swt->array_size <= swt->n_item)
+    swTree *node = malloc(sizeof(swTree));
+    node->key = key;
+
+    node->color = RED;
+    node->l = NULL;
+    node->r = NULL;
+    return node;
+}
+
+int compare_sw(char *k1, char *k2)
+{
+    return strcasecmp(k1, k2);
+}
+
+bool search_sw(swTree *n, Key key)
+{
+
+    while (n != NULL)
     {
-        swt->words_array = realloc(swt->words_array, swt->array_size * 2);
-        swt->array_size *= 2;
+        int cmp;
+        cmp = compare_sw(key, n->key);
+        if (cmp < 0)
+            n = n->l;
+        else if (cmp > 0)
+            n = n->r;
+        else
+            return true;
     }
-
-    swt->words_array[swt->n_item++] = word;
-}
-
-void swTable_sorting(StopwordTable *swt)
-{
-    // implement radix sort
-}
-
-bool swTable_has_word(char *word)
-{
-    // implement binary search
     return false;
 }
 
-void swTable_print(StopwordTable *swt)
+bool sw_is_red(swTree *x)
 {
-    for (int i = 0; i < swt->n_item; i++)
-    {
-        printf("%s\n", swt->words_array[i]);
-    }
+    if (x == NULL)
+        return BLACK;
+    return x->color; // RED == true
 }
 
-void swTable_destroy(StopwordTable *s)
+swTree *sw_rotate_left(swTree *h)
 {
-    for (int i = 0; i < s->n_item; i++)
+    swTree *x = h->r;
+    h->r = x->l;
+    x->l = h;
+    x->color = x->l->color;
+    x->l->color = RED;
+    return x;
+}
+
+swTree *sw_rotate_right(swTree *h)
+{
+    swTree *x = h->l;
+    h->l = x->r;
+    x->r = h;
+    x->color = x->r->color;
+    x->r->color = RED;
+    return x;
+}
+
+void sw_flip_colors(swTree *h)
+{
+    h->color = RED;
+    h->l->color = BLACK;
+    h->r->color = BLACK;
+}
+
+swTree *swTree_insert(swTree *h, Key key)
+{
+    // Insert at bottom and color it red.
+    if (h == NULL)
     {
-        free(s->words_array[i]);
+        return create_sw_node(key, RED);
     }
-    free(s->words_array);
-    free(s);
+    int cmp = compare_sw(key, h->key);
+    if (cmp < 0)
+    {
+        h->l = swTree_insert(h->l, key);
+    }
+    else if (cmp > 0)
+    {
+        h->r = swTree_insert(h->r, key);
+    }
+    else /*cmp == 0*/
+    {
+        // printf("erro: nao deveria ter 2 stopwords iguais: %s %s\n", key, h->key);
+        free(key);
+        
+    }
+    // Lean left.
+    if (sw_is_red(h->r) && !sw_is_red(h->l))
+    {
+        h = sw_rotate_left(h);
+    }
+    // Balance 4-node.
+    if (sw_is_red(h->l) && sw_is_red(h->l->l))
+    {
+        h = sw_rotate_right(h);
+    }
+    // Split 4-node.
+    if (sw_is_red(h->l) && sw_is_red(h->r))
+    {
+        sw_flip_colors(h);
+    }
+
+    return h;
+}
+
+void free_sw_Node(swTree *node)
+{
+    free(node->key);
+    free(node);
+}
+
+void free_swTree(swTree *root)
+{
+    if (root != NULL)
+    {
+
+        free_swTree(root->l);
+        free_swTree(root->r);
+        printf("%s\n", root->key);
+        // print_value(root->val);
+        free_sw_Node(root);
+    }
 }
