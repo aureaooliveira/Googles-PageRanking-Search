@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
-
-
 DocTable *docTable_contruct(int size)
 {
     DocTable *d = malloc(sizeof(DocTable));
@@ -87,6 +84,11 @@ void docTable_print(DocTable *doct)
     }
 }
 
+char *docTable_get_name(DocTable *d, int idx)
+{
+    return d->doc_array[idx].name;
+}
+
 void docTable_destroy(DocTable *d)
 {
     for (int i = 0; i < d->n_docs; i++)
@@ -97,3 +99,4 @@ void docTable_destroy(DocTable *d)
 
     free(d);
 }
+

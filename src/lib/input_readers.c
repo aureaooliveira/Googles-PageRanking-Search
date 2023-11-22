@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../headers/stopwords.h"
-#include "../../headers/graph.h"
+#include "../../headers/influency_graph.h"
 #include "../../headers/documents.h"
 
 StopwordTable *stopwords_reader(char *filepath)
@@ -34,7 +34,7 @@ StopwordTable *stopwords_reader(char *filepath)
     return sw_table;
 }
 
-void graph_reader(char *filepath)
+influencyGraph *graph_reader(char *filepath, DocTable *doc_table)
 {
 
     FILE *graph_file = fopen(filepath, "r");
@@ -44,7 +44,36 @@ void graph_reader(char *filepath)
         printf("erro ao abrir o arquivo %s", filepath);
         exit(1);
     }
+
+    influencyGraph *graph = graph_construct(doc_table->n_docs);
+
+    char *current_docName = malloc(sizeof(char) * 20);
+    char *aux_docName = malloc(sizeof(char) * 20);
+
+    while (!feof(graph_file))
+    {
+        int n_adjacency = 0;
+        fscanf(graph_file, "%s %d ", current_docName, &n_adjacency);
+
+        int current_docIdx = docTable_has_word(doc_table, current_docName);
+
+        graph->influenced_by_arr[current_docIdx] = influencedby_construct(n_adjacency);
+
+        for (int i = 0; i < n_adjacency; i++)
+        {
+            fscanf(graph_file, "%s ", aux_docName);
+            int aux_docIdx = docTable_has_word(doc_table, aux_docName);
+            // add o int aux_id no vetor da posicao influeced_by[current_id]
+            add_x_influencedby_y(graph, current_docIdx, aux_docIdx);
+
+            // add no vetor influences[aux_id] o valor int current_id
+            add_x_influences_y(graph, aux_docIdx, current_docIdx);
+        }
+    }
+
     fclose(graph_file);
+
+    return graph;
 }
 
 DocTable *documents_list_reader(char *filepath)
@@ -85,15 +114,17 @@ void reader(char *dirpath)
     StopwordTable *sw_table = stopwords_reader(stopword_file);
     DocTable *doc_table = documents_list_reader(index_file);
     // ordenar tabela de doc antes de fazer o grafo
-    docTable_print(doc_table);
-    printf("----------------------------------------ORDENA----------------------------------\n");
+    // docTable_print(doc_table);
+    // printf("----------------------------------------ORDENA----------------------------------\n");
 
     docTable_sorting(doc_table);
-    docTable_print(doc_table);
+    // docTable_print(doc_table);
 
-    printf("index: %d\n", docTable_has_word(doc_table, "10718.txt"));
-    printf("index: %d", docTable_has_word(doc_table, "840.txt"));
+    // printf("index: %d\n", docTable_has_word(doc_table, "10718.txt"));
+    // printf("index: %d", docTable_has_word(doc_table, "840.txt"));
 
+    influencyGraph *influency_graph = graph_reader(graph_file, doc_table);
+    print_influency_graph(influency_graph, doc_table);
 
     docTable_destroy(doc_table);
     swTable_destroy(sw_table);

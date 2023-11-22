@@ -1,6 +1,7 @@
 #ifndef _DOCUMENTS_H_
 #define _DOCUMENTS_H_
 #include <stdbool.h>
+// #include "influency_graph.h"
 typedef struct
 {
     char *name;
@@ -22,5 +23,7 @@ int docTable_has_word(DocTable *doct, char *word);
 void docTable_print(DocTable *doct);
 void docTable_destroy(DocTable *d);
 void docTable_sorting(DocTable *doct);
+
+char *docTable_get_name(DocTable *d, int idx);
 
 #endif
