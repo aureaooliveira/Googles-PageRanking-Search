@@ -8,6 +8,8 @@ typedef char *Key; // the key is a word
 #define BLACK false
 
 typedef struct node RBT;
+typedef RBT wordsTree;
+
 typedef int Value; // the value is a documents to be added to the array
 
 typedef struct

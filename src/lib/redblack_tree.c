@@ -33,7 +33,7 @@ RBT *create_node(Key key, Value val, bool color)
 
 int compare(Key k1, Key k2)
 {
-    return strcmp(k1, k2);
+    return strcasecmp(k1, k2);
 }
 
 doc_array *search(RBT *n, Key key)
@@ -89,6 +89,10 @@ void flip_colors(RBT *h)
 
 void add_doc_to_array(RBT *node, Value val)
 {
+    if (val == node->val.doc_array[node->val.n_docs - 1])
+    {
+        return;
+    }
     if (node->val.max_size == node->val.n_docs)
     {
         // realloc;
@@ -148,6 +152,7 @@ void print_value(doc_array val)
     {
         printf("%d ", val.doc_array[i]);
     }
+    printf("\n");
 }
 
 // fazer funcao apara liberar toda a arvore
@@ -163,10 +168,12 @@ void freeTree(RBT *root)
 {
     if (root != NULL)
     {
+
         // Primeiro, liberamos a memória dos filhos (percurso pós-ordem)
         freeTree(root->l);
         freeTree(root->r);
-
+        printf("%s ", root->key);
+        print_value(root->val);
         // Em seguida, liberamos a memória do nó atual
         freeNode(root);
     }

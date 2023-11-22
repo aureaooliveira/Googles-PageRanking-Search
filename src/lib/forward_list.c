@@ -146,15 +146,7 @@ void forward_list_remove(ForwardList *l, data_type val)
     }
     l->head = head;
 }
-/*
-void forward_list_clear(ForwardList *l);
 
-
-void forward_list_remove(ForwardList *l, data_type val);
-void forward_list_unique(ForwardList *l);
-void forward_list_cat(ForwardList *l, ForwardList *m);
-void forward_list_sort(ForwardList *l);
-*/
 void forward_list_destroy(ForwardList *l)
 {
 

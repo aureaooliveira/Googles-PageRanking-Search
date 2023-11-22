@@ -9,6 +9,7 @@
 #include "../../headers/stopwords.h"
 #include "../../headers/influency_graph.h"
 #include "../../headers/documents.h"
+#include "../../headers/redblack_tree.h"
 
 StopwordTable *stopwords_reader(char *filepath)
 {
@@ -100,6 +101,38 @@ DocTable *documents_list_reader(char *filepath)
     return doct;
 }
 
+wordsTree *words_reader(DocTable *doc_table, char *dirpath)
+{
+    char *document_file_name = malloc(sizeof(char) * 100);
+
+    wordsTree *allWords_tree = RBT_contruct();
+
+    for (int i = 0; i < doc_table->n_docs; i++)
+    {
+        sprintf(document_file_name, "%s/pages/%s", dirpath, doc_table->doc_array[i].name);
+
+        FILE *doc_file = fopen(document_file_name, "r");
+        if (doc_file == NULL)
+        {
+            printf("erro ao abrir o arquivo %s", document_file_name);
+            exit(1);
+        }
+
+        while (!feof(doc_file))
+        {
+            char *word = malloc(sizeof(char *) * 15);
+            fscanf(doc_file, "%s ", word);
+            allWords_tree = RBT_insert(allWords_tree, word, i);
+        }
+
+        fclose(doc_file);
+    }
+
+    free(document_file_name);
+
+    return allWords_tree;
+}
+
 void reader(char *dirpath)
 {
 
@@ -117,24 +150,26 @@ void reader(char *dirpath)
     DocTable *doc_table = documents_list_reader(index_file);
     // ordenar tabela de doc antes de fazer o grafo
     // docTable_print(doc_table);
-    // printf("----------------------------------------ORDENA----------------------------------\n");
+    // swTable_print(sw_table);
 
     docTable_sorting(doc_table);
-    // docTable_print(doc_table);
-
-    // printf("index: %d\n", docTable_has_word(doc_table, "10718.txt"));
-    // printf("index: %d", docTable_has_word(doc_table, "840.txt"));
-
+    swTable_sorting(sw_table);
+    // swTable_print(sw_table);
+    docTable_print(doc_table);
+    // printf("----------------------------------------SEPARA----------------------------------\n");
     influencyGraph *influency_graph = graph_reader(graph_file, doc_table);
     // print_influency_graph(influency_graph, doc_table);
-
     calc_allPageRank(doc_table, influency_graph);
+    influencyGraph_destroy(influency_graph);
+
+    wordsTree *allWords_tree = words_reader(doc_table, dirpath);
+
     // print_pagerank_values(doc_table);
 
     docTable_destroy(doc_table);
     swTable_destroy(sw_table);
-    influencyGraph_destroy(influency_graph);
 
+    freeTree(allWords_tree);
     free(index_file);
     free(stopword_file);
     free(graph_file);
