@@ -80,8 +80,8 @@ double abs_value(double val)
 
 bool stop_function(DocTable *doc_table, double *new_pageRank)
 {
-    double somatory = 0;
-    double aux;
+    long double somatory = 0;
+    long double aux;
 
     for (int i = 0; i < doc_table->n_docs; i++)
     {
@@ -90,16 +90,16 @@ bool stop_function(DocTable *doc_table, double *new_pageRank)
         doc_table->doc_array[i].pageRank = new_pageRank[i]; // atualiza o pr mais atual na tabela oficial
     }
 
-    double e_value = somatory / doc_table->n_docs;
+    long double e_value = somatory / doc_table->n_docs;
     // printf("EVALUE == %.9lf\n", e_value);
     // printf("EPSILON == %.9lf\n", EPSILON);
 
     return (e_value < EPSILON);
 }
 
-double pageRank(int doc, DocTable *doc_table, influencyGraph *graph)
+long double pageRank(int doc, DocTable *doc_table, influencyGraph *graph)
 {
-    double somatory = 0;
+    long double somatory = 0;
 
     ForwardListIterator *iterator = createIterator(graph->influences_arr[doc].adjacency_list);
     // iterador sobre a lista encadeada de IN(doc)
@@ -108,21 +108,22 @@ double pageRank(int doc, DocTable *doc_table, influencyGraph *graph)
 
     while (current_idx != -1)
     {
-        double j_pr_before = docTable_get_pageRank(doc_table, current_idx);
+        long double j_pr_before = docTable_get_pageRank(doc_table, current_idx);
         int j_out_module = graph->influenced_by_arr[current_idx].n_item;
+
         if (j_out_module == 0)
         {
             printf("ERROR: tinha que haver adjacencia");
             exit(1);
         }
-        somatory += j_pr_before / j_out_module;
+        somatory += (j_pr_before / j_out_module);
         current_idx = getNext(iterator);
     }
     freeIterator(iterator);
 
     if (graph->influenced_by_arr[doc].n_item == 0)
     {
-        double doc_pr_before = docTable_get_pageRank(doc_table, doc);
+        long double doc_pr_before = docTable_get_pageRank(doc_table, doc);
 
         return ((1 - ALPHA) / doc_table->n_docs) + (ALPHA * doc_pr_before) + (ALPHA * somatory);
     }
@@ -173,6 +174,6 @@ void print_pagerank_values(DocTable *d)
 {
     for (int i = 0; i < d->n_docs; i++)
     {
-        printf("%d %s %lf\n", i, docTable_get_name(d, i), docTable_get_pageRank(d, i));
+        printf("%d %s %.17lf\n", i, docTable_get_name(d, i), docTable_get_pageRank(d, i));
     }
 }

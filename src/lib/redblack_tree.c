@@ -13,6 +13,7 @@
 RBT *RBT_contruct()
 {
     RBT *node = NULL;
+    return node;
 }
 
 RBT *create_node(Key key, Value val, bool color)
@@ -38,6 +39,10 @@ int compare(Key k1, Key k2)
 
 doc_array *search(RBT *n, Key key)
 {
+    if (!key)
+    {
+        return NULL;
+    }
 
     while (n != NULL)
     {
@@ -169,12 +174,11 @@ void freeTree(RBT *root)
     if (root != NULL)
     {
 
-        // Primeiro, liberamos a memória dos filhos (percurso pós-ordem)
         freeTree(root->l);
         freeTree(root->r);
-        printf("%s ", root->key);
-        print_value(root->val);
-        // Em seguida, liberamos a memória do nó atual
+        // printf("%s ", root->key);
+        // print_value(root->val);
         freeNode(root);
     }
 }
+

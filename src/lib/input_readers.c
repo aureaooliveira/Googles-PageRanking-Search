@@ -10,6 +10,9 @@
 #include "../../headers/influency_graph.h"
 #include "../../headers/documents.h"
 #include "../../headers/redblack_tree.h"
+#include "../../headers/input_reader.h"
+
+
 
 swTree *stopwords_reader(char *filepath)
 {
@@ -139,7 +142,7 @@ wordsTree *words_reader(DocTable *doc_table, swTree *sw_tree, char *dirpath)
     return allWords_tree;
 }
 
-void reader(char *dirpath)
+allData reader(char *dirpath)
 {
 
     char *index_file = malloc(sizeof(char) * 100);
@@ -150,37 +153,29 @@ void reader(char *dirpath)
     sprintf(stopword_file, "%s/stopwords.txt", dirpath);
     sprintf(graph_file, "%s/graph.txt", dirpath);
 
-    // printf("%s\n%s\n%s\n", index_file, stopword_file, graph_file);
 
     swTree *sw_tree = stopwords_reader(stopword_file);
-    DocTable *doc_table = documents_list_reader(index_file);
-    // ordenar tabela de doc antes de fazer o grafo
-    // docTable_print(doc_table);
-    // swTable_print(sw_table);
 
-    docTable_sorting(doc_table);
-    // swTable_sorting(sw_table);
-    //  swTable_print(sw_table);
+    DocTable *doc_table = documents_list_reader(index_file);
+
+    docTable_sorting(doc_table);//by lexical order
 
     influencyGraph *influency_graph = graph_reader(graph_file, doc_table);
-    // print_influency_graph(influency_graph, doc_table);
+
     calc_allPageRank(doc_table, influency_graph);
-    // docTable_print(doc_table);
-    // printf("n docs : %d\n", doc_table->n_docs);
-    //  printf("----------------------------------------ORDENAAAAAAAAAAAAAA----------------------------------\n");
     influencyGraph_destroy(influency_graph);
+
     docTable_sorted_by_pageRank(doc_table);
-    wordsTree *allWords_tree = words_reader(doc_table,sw_tree, dirpath);
+    wordsTree *allWords_tree = words_reader(doc_table, sw_tree, dirpath);
 
-    // printf("%s %.9lf\n", docTable_get_name(doc_table, 115), docTable_get_pageRank(doc_table, 115));
-    // printf("%s %.9lf\n", docTable_get_name(doc_table, 475), docTable_get_pageRank(doc_table, 475));
-
-    // docTable_print(doc_table);
-
-    docTable_destroy(doc_table);
+    allData data;
+    data.doc_table = doc_table;
+    data.words_tree = allWords_tree; 
+    //docTable_destroy(doc_table);
     free_swTree(sw_tree);
-    freeTree(allWords_tree);
+    //freeTree(allWords_tree);
     free(index_file);
     free(stopword_file);
     free(graph_file);
+    return data;
 }
