@@ -17,29 +17,7 @@ influencyGraph *graph_construct(int n_doc)
     return g;
 }
 
-influenced_by influencedby_construct(int n_adjacency)
-{
-    influenced_by array;
-    array.adjacency_list = malloc(sizeof(int) * n_adjacency);
-    array.max_size = n_adjacency;
-    array.n_item = 0;
-    return array;
-}
 
-void add_x_influencedby_y(influencyGraph *graph, int x, int y)
-{
-    if (graph->influenced_by_arr[x].n_item == graph->influenced_by_arr[x].max_size)
-    {
-        printf("ERRO: ADD MAIS QUE O ESPERADO\n");
-        exit(1);
-    }
-    if (x == -1 || y == -1)
-    {
-        printf("ERRO: NAO ENCONTROU PALAVRA\n");
-        exit(1);
-    }
-    graph->influenced_by_arr[x].adjacency_list[graph->influenced_by_arr[x].n_item++] = y;
-}
 
 void add_x_influences_y(influencyGraph *graph, int x, int y)
 {
@@ -109,7 +87,7 @@ long double pageRank(int doc, DocTable *doc_table, influencyGraph *graph)
     while (current_idx != -1)
     {
         long double j_pr_before = docTable_get_pageRank(doc_table, current_idx);
-        int j_out_module = graph->influenced_by_arr[current_idx].n_item;
+        int j_out_module = graph->influenced_by_arr[current_idx];
 
         if (j_out_module == 0)
         {
@@ -121,7 +99,7 @@ long double pageRank(int doc, DocTable *doc_table, influencyGraph *graph)
     }
     freeIterator(iterator);
 
-    if (graph->influenced_by_arr[doc].n_item == 0)
+    if (graph->influenced_by_arr[doc] == 0)
     {
         long double doc_pr_before = docTable_get_pageRank(doc_table, doc);
 
@@ -158,10 +136,6 @@ void influencyGraph_destroy(influencyGraph *g)
 {
     for (int i = 0; i < g->n_total; i++)
     {
-        if (g->influenced_by_arr[i].adjacency_list)
-        {
-            free(g->influenced_by_arr[i].adjacency_list);
-        }
 
         forward_list_destroy(&g->influences_arr[i].adjacency_list);
     }

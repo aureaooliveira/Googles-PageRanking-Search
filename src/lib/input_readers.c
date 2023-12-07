@@ -59,14 +59,14 @@ influencyGraph *graph_reader(char *filepath, DocTable *doc_table)
 
         int current_docIdx = docTable_has_word(doc_table, current_docName);
 
-        graph->influenced_by_arr[current_docIdx] = influencedby_construct(n_adjacency);
+        graph->influenced_by_arr[current_docIdx] = n_adjacency;
 
         for (int i = 0; i < n_adjacency; i++)
         {
             fscanf(graph_file, "%s ", aux_docName);
             int aux_docIdx = docTable_has_word(doc_table, aux_docName);
             // add o int aux_id no vetor da posicao influeced_by[current_id]
-            add_x_influencedby_y(graph, current_docIdx, aux_docIdx);
+            //add_x_influencedby_y(graph, current_docIdx, aux_docIdx);
 
             // add no vetor influences[aux_id] o valor int current_id
             add_x_influences_y(graph, aux_docIdx, current_docIdx);

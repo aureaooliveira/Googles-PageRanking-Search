@@ -4,13 +4,8 @@
 #include "forward_list.h"
 #include "documents.h"
 
-typedef struct
-{
-    int max_size;
-    int n_item;
-    int *adjacency_list;
-
-} influenced_by; // array de arestas que saem do vertice doc
+typedef int influenced_by;
+// array de arestas que saem do vertice doc
 
 typedef struct
 {
