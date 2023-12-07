@@ -82,17 +82,20 @@ void print_result_of_search(doc_array *docs, DocTable *doc_table)
   {
     printf("pages:");
 
-    for (int i = 0; i < docs->n_docs; i++)
+    for (int i = 0; i < docs->n_docs - 1; i++)
     {
-      printf(" %s", docTable_get_name(doc_table, docs->doc_array[i]));
+      printf("%s ", docTable_get_name(doc_table, docs->doc_array[i]));
     }
+    printf("%s", docTable_get_name(doc_table, docs->doc_array[docs->n_docs - 1]));
 
     printf("\n");
     printf("pr:");
-    for (int i = 0; i < docs->n_docs; i++)
+    for (int i = 0; i < docs->n_docs - 1; i++)
     {
-      printf(" %lf", docTable_get_pageRank(doc_table, docs->doc_array[i]));
+      printf("%.20lf ", docTable_get_pageRank(doc_table, docs->doc_array[i]));
     }
+    printf("%.20lf", docTable_get_pageRank(doc_table, docs->doc_array[docs->n_docs - 1]));
+
     printf("\n");
   }
 }
@@ -105,6 +108,8 @@ int main(int argc, char **argv)
   char *word = malloc(sizeof(char) * 20);
   char *allocated_word = word;
   char *buffer = malloc(sizeof(char *) * 100);
+  char *allocated_buffer = buffer;
+
   while (!feof(stdin))
   {
 
@@ -114,7 +119,7 @@ int main(int argc, char **argv)
       break;
     }
     // retirando o \n
-    printf("seach: %s", line);
+    printf("search:%s", line);
     line[strlen(line) - 1] = '\0';
 
     word = strtok(line, " ");
@@ -140,6 +145,7 @@ int main(int argc, char **argv)
     }
   }
 
+  free(allocated_buffer);
   free(allocated_word);
   docTable_destroy(data_storage.doc_table);
   freeTree(data_storage.words_tree);

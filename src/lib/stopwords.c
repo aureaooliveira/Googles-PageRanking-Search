@@ -96,7 +96,6 @@ swTree *swTree_insert(swTree *h, Key key)
     {
         // printf("erro: nao deveria ter 2 stopwords iguais: %s %s\n", key, h->key);
         free(key);
-        
     }
     // Lean left.
     if (sw_is_red(h->r) && !sw_is_red(h->l))
@@ -130,7 +129,7 @@ void free_swTree(swTree *root)
 
         free_swTree(root->l);
         free_swTree(root->r);
-        printf("%s\n", root->key);
+        // printf("%s\n", root->key);
         // print_value(root->val);
         free_sw_Node(root);
     }

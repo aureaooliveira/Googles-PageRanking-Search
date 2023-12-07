@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define ALPHA 0.85
-#define EPSILON 1e-6
+#define EPSILON 1e-7
 
 influencyGraph *graph_construct(int n_doc)
 {
