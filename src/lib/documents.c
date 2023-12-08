@@ -43,7 +43,7 @@ int compare_doc(const void *v1, const void *v2)
 void docTable_sorting(DocTable *doct)
 {
     qsort(doct->doc_array, doct->n_docs, sizeof(document), compare_doc);
-    // implement radix sort
+    
 }
 
 int binarySearch(document *arr, int l, int r, char *doc_name)
@@ -53,27 +53,27 @@ int binarySearch(document *arr, int l, int r, char *doc_name)
         int m = l + (r - l) / 2;
         int result = strcmp(arr[m].name, doc_name);
 
-        // Check if x is present at mid
-        if (!result) // func return 0 if is equal
+        
+        if (!result) 
             return m;
 
-        // If x greater, ignore left half
+        
         if (result < 0)
             l = m + 1;
 
-        // If x is smaller, ignore right half
+        
         else
             r = m - 1;
     }
 
-    // If we reach here, then element was not present
+    
     return -1;
 }
 int docTable_has_word(DocTable *doct, char *word)
 {
     return binarySearch(doct->doc_array, 0, doct->n_docs, word);
 
-    // implement binary search
+    
 }
 
 void docTable_print(DocTable *doct)

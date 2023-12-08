@@ -1,8 +1,3 @@
-// ler caminho do diretorio pelo argv do console
-// dentro do diretorio -> ler arquivo com nome index.txt com nome dos documentos
-// dentro do diretorio ->ler arquivo stopwords.txt
-// dentro do diretorio ->ler arquivo graph.txt
-// dentro do diretorio ->outro diretorio "pages" com os documentos a serem lidos (nomes no index.txt)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,8 +60,7 @@ influencyGraph *graph_reader(char *filepath, DocTable *doc_table)
         {
             fscanf(graph_file, "%s ", aux_docName);
             int aux_docIdx = docTable_has_word(doc_table, aux_docName);
-            // add o int aux_id no vetor da posicao influeced_by[current_id]
-            //add_x_influencedby_y(graph, current_docIdx, aux_docIdx);
+            
 
             // add no vetor influences[aux_id] o valor int current_id
             add_x_influences_y(graph, aux_docIdx, current_docIdx);

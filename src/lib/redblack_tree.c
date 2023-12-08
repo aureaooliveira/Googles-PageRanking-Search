@@ -110,7 +110,7 @@ void add_doc_to_array(RBT *node, Value val)
 
 RBT *RBT_insert(RBT *h, Key key, Value val)
 {
-    // Insert at bottom and color it red.
+
     if (h == NULL)
     {
         return create_node(key, val, RED);
@@ -130,17 +130,17 @@ RBT *RBT_insert(RBT *h, Key key, Value val)
         add_doc_to_array(h, val);
         free(key);
     }
-    // Lean left.
+
     if (is_red(h->r) && !is_red(h->l))
     {
         h = rotate_left(h);
     }
-    // Balance 4-node.
+
     if (is_red(h->l) && is_red(h->l->l))
     {
         h = rotate_right(h);
     }
-    // Split 4-node.
+
     if (is_red(h->l) && is_red(h->r))
     {
         flip_colors(h);
@@ -159,8 +159,6 @@ void print_value(doc_array val)
     }
     printf("\n");
 }
-
-// fazer funcao apara liberar toda a arvore
 
 void freeNode(RBT *node)
 {
@@ -181,4 +179,3 @@ void freeTree(RBT *root)
         freeNode(root);
     }
 }
-

@@ -3,16 +3,7 @@
 #include "../headers/redblack_tree.h"
 #include <string.h>
 #include <stdlib.h>
-
-/*
-  infos:
-
-   - Doc_Table ordenada por ordem do pageRanking e lexical
-   - StopWord como um array (ERRADO) -> implementar em uma hash table
-   - implementar a busca de varios termos juntos
-   - estudar as entradas e saidas
-
- */
+#include <time.h>
 
 doc_array *compare_intersection(doc_array *array_temp, doc_array *array2)
 {
@@ -102,6 +93,7 @@ void print_result_of_search(doc_array *docs, DocTable *doc_table)
 
 int main(int argc, char **argv)
 {
+  clock_t start_time = clock();
 
   allData data_storage = reader(argv[1]);
   char line[100];
@@ -149,6 +141,11 @@ int main(int argc, char **argv)
   free(allocated_word);
   docTable_destroy(data_storage.doc_table);
   freeTree(data_storage.words_tree);
+
+  //clock_t end_time = clock();
+
+  //double elapsed_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+  //printf("Tempo de execucao: %.4f segundos\n", elapsed_time);
 
   return 0;
 }

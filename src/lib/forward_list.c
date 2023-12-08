@@ -87,66 +87,6 @@ data_type forward_list_get(ForwardList *l, int i)
     return val;
 }
 
-data_type forward_list_pop_front(ForwardList *l)
-{
-    data_type val = l->head->value;
-    Node *head = l->head->next;
-    node_destroy(l->head);
-    l->head = head;
-    l->size--;
-    return val;
-}
-
-ForwardList *forward_list_reverse(ForwardList *l)
-{
-    ForwardList *reverseList = forward_list_construct();
-    for (int i = 0; i < l->size; i++)
-    {
-
-        reverseList->head = node_construct(forward_list_get(l, i), reverseList->head);
-        // printf("i = %d,val = %d\n",i, forward_list_get(l,i));
-    }
-    reverseList->size = l->size;
-    return reverseList; // list->head->next = 0;
-}
-
-void forward_list_remove(ForwardList *l, data_type val)
-{
-    Node *head = l->head;
-    Node *atual = l->head;
-    Node *anterior = l->head;
-    // consertar funcao para remover outros itens da lista que nao seja o head
-    // função apenas excliidno primeiro intem
-
-    for (int i = 0; i < l->size; i++)
-    {
-        printf("atual val = %d\n", atual->value);
-
-        if (atual->value == val)
-        {
-            printf("entrou");
-
-            if (atual == l->head)
-            {
-                head = atual->next;
-            }
-            else
-            {
-
-                anterior->next = atual->next;
-            }
-
-            node_destroy(atual);
-            l->size--;
-            // liberar o nó atual
-            break;
-        }
-        anterior = atual;
-        atual = atual->next;
-    }
-    l->head = head;
-}
-
 void forward_list_destroy(ForwardList *l)
 {
 
@@ -179,7 +119,7 @@ int getNext(ForwardListIterator *iterator)
 {
     if (iterator->current == NULL)
     {
-        // Retorna um valor especial (por exemplo, -1) para indicar o final da lista
+        // Retorna um valor especial  -1 para indicar o final da lista
         return -1;
     }
     else

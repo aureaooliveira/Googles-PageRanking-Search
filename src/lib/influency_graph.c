@@ -30,12 +30,7 @@ void print_influency_graph(influencyGraph *g, DocTable *dt)
     {
         printf("%s ", docTable_get_name(dt, i));
 
-        /* for (int j = 0; j < g->influenced_by_arr[i].n_item; j++)
-         {
-             int idx = g->influenced_by_arr[i].adjacency_list[j];
-             printf("%s ", docTable_get_name(dt, idx));
-         }
-         */
+        
 
         for (int j = 0; j < g->influences_arr[i].adjacency_list.size; j++)
         {
